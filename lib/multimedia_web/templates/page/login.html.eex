@@ -1,0 +1,10 @@
+<h1>Login</h1>
+<%= form_for @changeset, "/login", fn f -> %>
+  <%= label f, :email %>
+  <%= text_input f, :email %>
+
+  <%= label f, :password %>
+  <%= password_input f, :password %>
+
+  <button type="submit">Login</button>
+<% end %>

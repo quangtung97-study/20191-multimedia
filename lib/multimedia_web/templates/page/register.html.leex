@@ -1,0 +1,24 @@
+<h1>Quang Tung</h1>
+<%= f = form_for @changeset, "#", [phx_change: :validate, phx_submit: :save] %>
+  <% errors = errors_for(@changeset) %>
+
+  <%= label f, :email %>
+  <%= text_input f, :email, class: "form-item", required: true %>
+  <%= for msg <- Map.get(errors, :email, []) do %>
+    <div class="error-item"><%= msg %></div>
+  <% end %>
+
+  <%= label f, :password, class: "form-label" %>
+  <%= password_input f, :password, class: "form-item", required: true %>
+  <%= for msg <- Map.get(errors, :password, []) do %>
+    <div class="error-item"><%= msg %></div>
+  <% end %>
+
+  <%= label f, :password_confirmation, class: "form-label" %>
+  <%= password_input f, :password_confirmation, class: "form-item", required: true %>
+  <%= for msg <- Map.get(errors, :password_confirmation, []) do %>
+    <div class="error-item"><%= msg %></div>
+  <% end %>
+
+  <button type="submit" class="form-submit" <%= if @changeset.valid?, do: "", else: "disabled" %>>Register</button>
+</form>

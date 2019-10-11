@@ -21,6 +21,8 @@ defmodule MultimediaWeb.Router do
     get "/", PageController, :index
     get "/login", PageController, :login
     post "/login", PageController, :login_post
+    post "/logout", PageController, :logout
+    get "/register", PageController, :register
   end
 
   # scope "/api", MultimediaWeb do

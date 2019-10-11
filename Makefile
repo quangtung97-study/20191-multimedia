@@ -4,8 +4,8 @@ all:
 	mix compile
 
 test:
-	npm run --prefix assets/ flow
-	# mix dialyzer
+	# npm run --prefix assets/ flow
+	mix dialyzer
 	# mix test
 
 format:

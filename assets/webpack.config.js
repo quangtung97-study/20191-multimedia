@@ -1,11 +1,10 @@
 const path = require('path');
-const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = (env, options) => ({
+module.exports = (_env, _options) => ({
   optimization: {
     minimizer: [
       new UglifyJsPlugin({ cache: true, parallel: true, sourceMap: false }),
@@ -13,8 +12,8 @@ module.exports = (env, options) => ({
     ]
   },
   entry: {
-    app: './js/app.js',
-    home: './js/home.js'
+    app: './js/app.tsx',
+    home: './js/home.tsx'
   },
   output: {
     filename: '[name].js',
@@ -22,6 +21,13 @@ module.exports = (env, options) => ({
   },
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "ts-loader"
+        }
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,

@@ -5,6 +5,7 @@ defmodule Multimedia.User do
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
     field :password_hash, :string
 
     timestamps()
@@ -31,6 +32,7 @@ defmodule Multimedia.User do
     |> validate_required([:email, :password])
     |> validate_length(:password, min: 4)
     |> put_password_hash()
+    |> unique_constraint(:email)
   end
 
   @spec login_changeset(any) :: Ecto.Changeset.t()
@@ -39,5 +41,13 @@ defmodule Multimedia.User do
     |> cast(params, [:email, :password])
     |> validate_required([:email, :password])
     |> validate_length(:password, min: 4)
+  end
+
+  def register_changeset(params) do
+    %__MODULE__{}
+    |> cast(params, [:email, :password, :password_confirmation])
+    |> validate_required([:email, :password, :password_confirmation])
+    |> validate_length(:password, min: 4)
+    |> validate_confirmation(:password)
   end
 end

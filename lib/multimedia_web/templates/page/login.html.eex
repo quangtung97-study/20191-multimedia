@@ -7,4 +7,6 @@
   <%= password_input f, :password %>
 
   <button type="submit">Login</button>
+
+  <%= link "Register", to: Routes.page_path(@conn, :register) %>
 <% end %>

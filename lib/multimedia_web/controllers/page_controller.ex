@@ -5,8 +5,13 @@ defmodule MultimediaWeb.PageController do
 
   def index(conn, _params) do
     case conn.assigns[:session] do
-      nil -> redirect(conn, to: "/login")
-      _ -> render(conn, "home.html")
+      nil ->
+        redirect(conn, to: "/login")
+
+      session ->
+        csrf_token = get_csrf_token()
+        conn
+        |> render("home.html", csrf_token: csrf_token)
     end
   end
 
@@ -51,5 +56,18 @@ defmodule MultimediaWeb.PageController do
         |> put_flash(:error, "Email is not exist")
         |> render("login.html", changeset: changeset)
     end
+  end
+
+  def register(conn, _params) do
+    live_render(conn, MultimediaWeb.RegisterLive, session: %{})
+  end
+
+  def logout(conn, _params) do
+    session = conn.assigns[:session]
+    Repo.delete!(session)
+
+    conn
+    |> clear_session()
+    |> redirect(to: "/login")
   end
 end

@@ -19,8 +19,12 @@ defmodule MultimediaWeb.AuthPlug do
     with session_id when not is_nil(session_id) <- get_session(conn, :session_id),
          session when not is_nil(session) <- Repo.get(UserSession, session_id),
          user when not is_nil(user) <- get_user(session) do
+      token = Phoenix.Token.sign(conn, "user socket", session.id)
+
       conn
       |> assign(:session, session)
+      |> assign(:session_id, session.id)
+      |> assign(:user_token, token)
       |> assign(:user, user)
     else
       _ -> conn

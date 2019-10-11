@@ -1,3 +1,17 @@
-/* This file is for your main application css. */
-
 @import "./phoenix.css";
+
+.form-item {
+  margin: 0px;
+}
+
+.form-label {
+  margin-top: 15px;
+}
+
+.error-item {
+  color: red;
+}
+
+.form-submit {
+  margin-top: 20px;
+}

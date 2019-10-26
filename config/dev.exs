@@ -21,6 +21,14 @@ config :multimedia, MultimediaWeb.Endpoint,
       "--watch-stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
+  ],
+  force_ssl: [hsts: true],
+  https: [
+    :inet6,
+    port: 5000,
+    cipher_suite: :strong,
+    keyfile: Path.expand("../ssl/key.pem", __DIR__),
+    certfile: Path.expand("../ssl/certificate.pem", __DIR__)
   ]
 
 config :multimedia, MultimediaWeb.Endpoint,

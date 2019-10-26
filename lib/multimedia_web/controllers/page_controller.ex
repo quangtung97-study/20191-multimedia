@@ -10,8 +10,11 @@ defmodule MultimediaWeb.PageController do
 
       session ->
         csrf_token = get_csrf_token()
+
         conn
-        |> render("home.html", csrf_token: csrf_token)
+        |> render("home.html",
+          csrf_token: csrf_token
+        )
     end
   end
 

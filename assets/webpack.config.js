@@ -12,8 +12,8 @@ module.exports = (_env, _options) => ({
     ]
   },
   entry: {
-    app: './js/app.tsx',
-    home: './js/home.tsx'
+    app: './js/app.js',
+    home: './js/home.js'
   },
   output: {
     filename: '[name].js',
@@ -21,13 +21,6 @@ module.exports = (_env, _options) => ({
   },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "ts-loader"
-        }
-      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -38,6 +31,14 @@ module.exports = (_env, _options) => ({
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.elm$/,
+        exclude: [/elm-stuff/, /node_modules/],
+        use: {
+          loader: 'elm-webpack-loader',
+          options: {}
+        }
       }
     ]
   },

@@ -18,24 +18,60 @@ defmodule MultimediaWeb.SessionChannel do
     {:noreply, socket}
   end
 
-  def handle_in("offer", %{"sessionId" => session_id, "data" => offer}, socket) do
+  def handle_in("requestConnect", %{"sessionId" => session_id}, socket) do
     socket.endpoint.broadcast!(
       "session:#{session_id}",
-      "requestedConnection",
+      "remoteRequestConnect",
       %{"sessionId" => socket.assigns[:session_id]}
     )
 
-    socket.endpoint.broadcast!("session:#{session_id}", "remoteOffer", offer)
+    {:noreply, socket}
+  end
+
+  def handle_in("acceptConnect", %{"sessionId" => session_id}, socket) do
+    socket.endpoint.broadcast!(
+      "session:#{session_id}",
+      "remoteAcceptConnect",
+      %{"sessionId" => socket.assigns[:session_id]}
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_in("rejectConnect", %{"sessionId" => session_id}, socket) do
+    socket.endpoint.broadcast!(
+      "session:#{session_id}",
+      "remoteRejectConnect",
+      %{"sessionId" => socket.assigns[:session_id]}
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_in("offer", %{"sessionId" => session_id, "data" => offer}, socket) do
+    socket.endpoint.broadcast!("session:#{session_id}", "remoteOffer", %{
+      "sessionId" => socket.assigns[:session_id],
+      "offer" => offer
+    })
+
     {:noreply, socket}
   end
 
   def handle_in("answer", %{"sessionId" => session_id, "data" => answer}, socket) do
-    socket.endpoint.broadcast!("session:#{session_id}", "remoteAnswer", answer)
+    socket.endpoint.broadcast!("session:#{session_id}", "remoteAnswer", %{
+      "sessionId" => socket.assigns[:session_id],
+      "answer" => answer
+    })
+
     {:noreply, socket}
   end
 
   def handle_in("ice", %{"sessionId" => session_id, "data" => ice}, socket) do
-    socket.endpoint.broadcast!("session:#{session_id}", "remoteICE", ice)
+    socket.endpoint.broadcast!("session:#{session_id}", "remoteICE", %{
+      "sessionId" => socket.assigns[:session_id],
+      "ice" => ice
+    })
+
     {:noreply, socket}
   end
 end

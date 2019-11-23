@@ -3,8 +3,8 @@ module Home exposing (main)
 import Browser
 import Html exposing (Html, div)
 import Json.Encode as E
+import Media
 import PhoenixChannel
-import VideoCall
 
 
 main : Program Flags Model Msg
@@ -17,31 +17,46 @@ main =
         }
 
 
+
+-- MODEL
+
+
 type alias Flags =
     ()
 
 
 type alias Model =
-    { videoCall : VideoCall.Model
+    { phoenix : PhoenixChannel.Model Msg
+    , media : Media.Model
     }
 
 
+
+-- UPDATE
+
+
 type Msg
-    = VideoCallMsg VideoCall.Msg
-    | RecvMessage String E.Value
+    = Media Media.Msg
+    | DefaultChannelEvent String E.Value
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     let
-        ( videoModel, videoCmd ) =
-            VideoCall.init
+        ( media, mediaCmd ) =
+            Media.init
+
+        ( phoenix, phoenixCmd ) =
+            Media.channelSubscriptions
+                |> PhoenixChannel.mapList Media
+                |> PhoenixChannel.init
     in
-    ( { videoCall = videoModel
+    ( { phoenix = phoenix
+      , media = media
       }
     , Cmd.batch
-        [ Cmd.map VideoCallMsg videoCmd
-        , PhoenixChannel.init
+        [ Cmd.map Media mediaCmd
+        , phoenixCmd
         ]
     )
 
@@ -49,31 +64,36 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        VideoCallMsg videoMsg ->
+        Media mediaMsg ->
             let
-                ( videoModel, cmd ) =
-                    VideoCall.update videoMsg model.videoCall
+                ( media, cmd ) =
+                    Media.update mediaMsg model.media
             in
-            ( { model | videoCall = videoModel }, Cmd.map VideoCallMsg cmd )
+            ( { model | media = media }, Cmd.map Media cmd )
 
-        RecvMessage event data ->
-            let
-                ( videoModel, videoCmd ) =
-                    VideoCall.handleChannelEvent model.videoCall event data
-            in
-            ( { model | videoCall = videoModel }, Cmd.map VideoCallMsg videoCmd )
+        DefaultChannelEvent _ _ ->
+            ( model, Cmd.none )
 
 
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.batch
-        [ Sub.map VideoCallMsg VideoCall.subscriptions
-        , PhoenixChannel.subscriptions (\event data -> RecvMessage event data)
-        ]
+
+-- VIEW
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ Html.map VideoCallMsg (VideoCall.view model.videoCall)
+        [ Html.map Media (Media.view model.media)
+        ]
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Sub.map Media Media.subscriptions
+        , PhoenixChannel.subscriptions model.phoenix
+            (\event data -> DefaultChannelEvent event data)
         ]
